@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.http.ResponseEntity.status;
 
@@ -28,15 +30,10 @@ public class AuthenticationController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity authentication(@RequestBody AuthenticationRequest request){
+    public ResponseEntity authentication(@RequestBody @Valid AuthenticationRequest request){
 
         AuthenticationResponse response = service.authenticate(request);
-        if (response.isSuccess())
-            return status(HttpStatus.OK).body(response);
-        else if(response.getMessages().get(0).equals("Senha incorreta") || response.getMessages().get(0).equals("Dados inválidos"))
-            return status(HttpStatus.BAD_REQUEST).body(response);
-        else
-            return status(HttpStatus.NOT_FOUND).body(response);
+        return response.isSuccess() ? status(HttpStatus.OK).body(response) : status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @CrossOrigin
